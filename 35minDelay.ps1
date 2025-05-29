@@ -26,8 +26,6 @@ Write-Host "--------------------------------------------------" -ForegroundColor
 Write-Host "                       ATTENTION!                     " -ForegroundColor Yellow
 Write-Host "--------------------------------------------------" -ForegroundColor Yellow
 Write-Host "Before running these tests, ensure the following:" -ForegroundColor Yellow
-Write-Host "1. You have Apache running on your Kali Box." -ForegroundColor Yellow
-Write-Host "2. 'popup.ps1' is located in your Apache web root (e.g., /var/www/html/)." -ForegroundColor Yellow
 Write-Host "3. The Netcat listener command 'nc -lvp 4444' was run and is active on your Kali Box." -ForegroundColor Yellow
 Write-Host "--------------------------------------------------" -ForegroundColor Yellow
 Write-Host ""
