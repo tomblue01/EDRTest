@@ -21,8 +21,8 @@ $scriptsToRun = @(
 
 # Define the pause duration in minutes
 $pauseMinutes = 2100
-
-<# Write-Host "--------------------------------------------------" -ForegroundColor Yellow
+<#
+Write-Host "--------------------------------------------------" -ForegroundColor Yellow
 Write-Host "                       ATTENTION!                     " -ForegroundColor Yellow
 Write-Host "--------------------------------------------------" -ForegroundColor Yellow
 Write-Host "Before running these tests, ensure the following:" -ForegroundColor Yellow
@@ -34,10 +34,11 @@ Write-Host ""
 
 # Require user to hit Enter to proceed
 Read-Host "Press Enter to proceed with the script execution..."
+#>
 
 Write-Host "Starting script execution sequence..." -ForegroundColor Green
 Write-Host "Each script will be followed by a $pauseMinutes minute pause." -ForegroundColor Green
-Write-Host "" #>
+Write-Host ""
 
 # Loop through each script in the list
 foreach ($scriptName in $scriptsToRun) {
@@ -53,14 +54,19 @@ foreach ($scriptName in $scriptsToRun) {
         try {
             # Determine how to execute based on file extension
             if ($scriptName.EndsWith(".bat", [System.StringComparison]::OrdinalIgnoreCase)) {
-                # For .bat files, use Start-Process to run them in a new command prompt
-                Write-Host "Executing .bat file using Start-Process..." -ForegroundColor White
-                Start-Process -FilePath $scriptPath -Wait -NoNewWindow # -NoNewWindow keeps it from popping up a cmd window
+                # For .bat files, use Start-Process to run them in a new command prompt instance
+                Write-Host "Executing .bat file in a new cmd.exe instance..." -ForegroundColor White
+                Start-Process -FilePath $scriptPath -Wait -NoNewWindow
                 Write-Host "'$scriptName' execution completed." -ForegroundColor Green
             } elseif ($scriptName.EndsWith(".ps1", [System.StringComparison]::OrdinalIgnoreCase)) {
-                # For .ps1 files, use the call operator (&) to execute them
-                Write-Host "Executing .ps1 file using the call operator..." -ForegroundColor White
-                & $scriptPath # The call operator runs the script in the current scope or a child scope
+                # For .ps1 files, use Start-Process to run them in a new PowerShell instance
+                # -File: Specifies a script file to run.
+                # -ExecutionPolicy Bypass: Temporarily bypasses the execution policy for this command.
+                # -NoProfile: Prevents loading of the current user's PowerShell profile.
+                # -Wait: Waits for the new process to terminate before continuing.
+                # -NoNewWindow: Prevents a new console window from appearing.
+                Write-Host "Executing .ps1 file in a new powershell.exe instance..." -ForegroundColor White
+                Start-Process -FilePath "powershell.exe" -ArgumentList "-File `"$scriptPath`" -ExecutionPolicy Bypass -NoProfile" -Wait -NoNewWindow
                 Write-Host "'$scriptName' execution completed." -ForegroundColor Green
             } else {
                 Write-Host "Skipping '$scriptName': Unsupported file type." -ForegroundColor Red
