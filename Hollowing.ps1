@@ -1,5 +1,5 @@
 # Create test directory
-$testDir = "C:\Temp\SideloadTest"
+$testDir = "C:\Temp\HollowingTest"
 New-Item -ItemType Directory -Path $testDir -Force | Out-Null
 
 # Copy a legitimate executable (cmd.exe instead of notepad.exe)
