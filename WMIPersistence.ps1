@@ -62,7 +62,7 @@ function Cleanup-WmiSubscription {
 
     # Use try...catch for each removal, and check if the object exists before attempting removal.
     try {
-        $binding = Get-WmiObject -Namespace root\subscription -Class __FilterToConsumerBinding -Filter "Filter = '__EventFilter.Name=""MyFilter""" -ErrorAction Stop
+        $binding = Get-WmiObject -Namespace root\subscription -Class __FilterToConsumerBinding -Filter "__PATH LIKE '%MyFilter%'" -ErrorAction Stop
         if ($binding) {
             $binding | Remove-WmiObject -ErrorAction Stop
             Write-Host "Binding removed."
