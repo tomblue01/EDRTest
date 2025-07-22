@@ -111,57 +111,39 @@ public class ProcessHollowing {
 Write-Host "Launching cmd.exe from test directory..."
 $startInfo = New-Object System.Diagnostics.ProcessStartInfo
 $startInfo.FileName = "$testDir\cmd.exe"
+$startInfo.Arguments = "/C echo."  # Run 'echo.' and exit immediately
 $startInfo.WorkingDirectory = $testDir
-$startInfo.UseShellExecute = $false  # Important for capturing errors
-$startInfo.RedirectStandardError = $true # Capture error stream
-$startInfo.RedirectStandardOutput = $true
+$startInfo.UseShellExecute = $false  # Non-interactive execution
+$startInfo.RedirectStandardError = $true  # Capture error stream
+$startInfo.RedirectStandardOutput = $true  # Capture output stream
 $proc = New-Object System.Diagnostics.Process
 $proc.StartInfo = $startInfo
 
 try {
-    $proc.Start() | Out-Null # Suppress success output
-    $proc.WaitForExit(5000) # Wait for 5 seconds (adjust as needed)
+    $proc.Start() | Out-Null  # Suppress success output
+    $proc.WaitForExit(5000)  # Wait for up to 5 seconds
     Write-Host "Cmd Process Exited: $($proc.HasExited)"
     Write-Host "Cmd Exit Code: $($proc.ExitCode)"
 
     if ($proc.HasExited) {
         $errorMessage = $proc.StandardError.ReadToEnd()
-        $standardOutput = $proc.StandardOutput.ReadToEnd() # Capture standard output
+        $standardOutput = $proc.StandardOutput.ReadToEnd()
         if ($errorMessage) {
-            Write-Error "Failed to start cmd.exe.  Error: $errorMessage"
+            Write-Error "Failed to start cmd.exe. Error: $errorMessage"
+        } else {
+            Write-Host "Cmd Standard Output: $standardOutput"
         }
-        else
-        {
-             Write-Error "Failed to start cmd.exe or it exited prematurely with no error message."
-        }
-        Write-Host "Cmd Standard Output: $standardOutput"
-        #Remove-Item -Path $testDir -Recurse -Force  # Commented out for debugging
-        #exit # Commented out for debugging
+    } else {
+        Write-Warning "cmd.exe did not exit within 5 seconds. Terminating process..."
+        $proc.Kill()  # Forcefully terminate the process
+        Write-Error "cmd.exe was terminated due to timeout."
     }
-}
-catch {
-    Write-Error "Exception while starting cmd.exe: $($_.Exception.Message)"
-    #Remove-Item -Path $testDir -Recurse -Force # Commented out for debugging
-    #exit # Commented out for debugging
-}
-
-
-
-# Check if cmd.exe is running
-if ($proc -and -not $proc.HasExited) {
-    Write-Host "Cmd started with PID: $($proc.Id), Path: $($proc.Path)"
-    # Perform process hollowing on the launched process
-    [ProcessHollowing]::SimulateHollowing($proc.Id)
-}
-else {
-    Write-Error "Failed to start cmd.exe or it exited prematurely."
+} catch {
+    Write-Error "An error occurred while starting cmd.exe: $($_.Exception.Message)"
+} finally {
+    # Ensure the process is disposed
+    $proc.Dispose()
 }
 
-
-
-# Wait a moment for detection
-Start-Sleep -Seconds 5
-
-# Cleanup  # Commented out for debugging
-#Get-Process cmd* | Stop-Process -Force -ErrorAction SilentlyContinue
-#Remove-Item -Path $testDir -Recurse -Force # Commented out for debugging
+# Clean up the test directory (uncomment for production)
+# Remove-Item -Path $testDir -Recurse -Force
