@@ -26,7 +26,7 @@ $scriptsToRun = @(
 
 # Define the pause duration in minutes
 $pauseMinutes = 2100
-<#
+
 Write-Host "--------------------------------------------------" -ForegroundColor Yellow
 Write-Host "                       ATTENTION!                     " -ForegroundColor Yellow
 Write-Host "--------------------------------------------------" -ForegroundColor Yellow
@@ -37,7 +37,6 @@ Write-Host ""
 
 # Require user to hit Enter to proceed
 Read-Host "Press Enter to proceed with the script execution..."
-#>
 
 Write-Host "Starting script execution sequence..." -ForegroundColor Green
 Write-Host "Each script will be followed by a $pauseMinutes minute pause." -ForegroundColor Green
