@@ -25,7 +25,7 @@ $scriptsToRun = @(
 )
 
 # Define the pause duration in minutes
-$pauseMinutes = 2100
+$pauseSeconds = 2100
 
 Write-Host "--------------------------------------------------" -ForegroundColor Yellow
 Write-Host "                       ATTENTION!                     " -ForegroundColor Yellow
@@ -82,4 +82,5 @@ foreach ($scriptName in $scriptsToRun) {
 Write-Host "--------------------------------------------------" -ForegroundColor Green
 Write-Host "All scripts have been executed or skipped." -ForegroundColor Green
 Write-Host "--------------------------------------------------" -ForegroundColor Green
+
 
