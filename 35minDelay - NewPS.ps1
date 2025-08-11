@@ -15,8 +15,13 @@
 
 # Define the list of scripts to execute
 $scriptsToRun = @(
+   "ChangePerms.bat",
     "Hollowing.ps1",
-    "MemoryDump.ps1"
+    "MemoryDump.ps1",
+    "ProcessInjection.ps1",
+    "ReverseShell.ps1",
+    "SideLoad.ps1",
+    "WMIPersistence.ps1"
 )
 
 # Define the pause duration in minutes
