@@ -15,13 +15,18 @@
 
 # Define the list of scripts to execute
 $scriptsToRun = @(
+    "ChangePerms.bat",
     "Hollowing.ps1",
-    "MemoryDump.ps1"
+    "MemoryDump.ps1",
+    "ProcessInjection.ps1",
+    "ReverseShell.ps1",
+    "SideLoad.ps1",
+    "WMIPersistence.ps1"
 )
 
 # Define the pause duration in minutes
 $pauseMinutes = 2100
-<#
+
 Write-Host "--------------------------------------------------" -ForegroundColor Yellow
 Write-Host "                       ATTENTION!                     " -ForegroundColor Yellow
 Write-Host "--------------------------------------------------" -ForegroundColor Yellow
@@ -32,14 +37,14 @@ Write-Host ""
 
 # Require user to hit Enter to proceed
 Read-Host "Press Enter to proceed with the script execution..."
-#>
 
 Write-Host "Starting script execution sequence..." -ForegroundColor Green
-Write-Host "Each script will be followed by a $pauseMinutes minute pause." -ForegroundColor Green
+Write-Host "Each script will be followed by a $pauseSeconds second pause." -ForegroundColor Green
 Write-Host ""
 
 # Loop through each script in the list
 foreach ($scriptName in $scriptsToRun) {
+    # Get the full path to the script using the current script's location
     $scriptPath = Join-Path -Path $PSScriptRoot -ChildPath $scriptName
 
     Write-Host "--------------------------------------------------" -ForegroundColor Cyan
@@ -50,25 +55,11 @@ foreach ($scriptName in $scriptsToRun) {
     # Check if the script file exists
     if (Test-Path $scriptPath) {
         try {
-            # Determine how to execute based on file extension
-            if ($scriptName.EndsWith(".bat", [System.StringComparison]::OrdinalIgnoreCase)) {
-                # For .bat files, use Start-Process to run them in a new command prompt instance
-                Write-Host "Executing .bat file in a new cmd.exe instance..." -ForegroundColor White
-                Start-Process -FilePath $scriptPath -Wait -NoNewWindow
-                Write-Host "'$scriptName' execution completed." -ForegroundColor Green
-            } elseif ($scriptName.EndsWith(".ps1", [System.StringComparison]::OrdinalIgnoreCase)) {
-                # For .ps1 files, use Start-Process to run them in a new PowerShell instance
-                # -File: Specifies a script file to run.
-                # -ExecutionPolicy Bypass: Temporarily bypasses the execution policy for this command.
-                # -NoProfile: Prevents loading of the current user's PowerShell profile.
-                # -Wait: Waits for the new process to terminate before continuing.
-                # -NoNewWindow: Prevents a new console window from appearing.
-                Write-Host "Executing .ps1 file in a new powershell.exe instance..." -ForegroundColor White
-                Start-Process -FilePath "powershell.exe" -ArgumentList "-File `"$scriptPath`" -ExecutionPolicy Bypass -NoProfile" -Wait -NoNewWindow
-                Write-Host "'$scriptName' execution completed." -ForegroundColor Green
-            } else {
-                Write-Host "Skipping '$scriptName': Unsupported file type." -ForegroundColor Red
-            }
+            # Use the call operator (&) to execute the script in the current instance
+            # This works for both .ps1 and .bat files.
+            Write-Host "Executing script in the current powershell.exe instance..." -ForegroundColor White
+            & $scriptPath
+            Write-Host "'$scriptName' execution completed." -ForegroundColor Green
         } catch {
             Write-Host "An error occurred during '$scriptName' execution:" -ForegroundColor Red
             Write-Host $_.Exception.Message -ForegroundColor Red
@@ -81,8 +72,8 @@ foreach ($scriptName in $scriptsToRun) {
     # Pause only if it's not the last script
     if ($scriptName -ne $scriptsToRun[-1]) {
         Write-Host ""
-        Write-Host "Pausing for $pauseMinutes minutes before the next script..." -ForegroundColor Blue
-        Start-Sleep -Seconds $pauseMinutes
+        Write-Host "Pausing for $pauseSeconds seconds before the next script..." -ForegroundColor Blue
+        Start-Sleep -Seconds $pauseSeconds
         Write-Host "Pause ended. Resuming execution." -ForegroundColor Blue
         Write-Host ""
     }
@@ -91,3 +82,4 @@ foreach ($scriptName in $scriptsToRun) {
 Write-Host "--------------------------------------------------" -ForegroundColor Green
 Write-Host "All scripts have been executed or skipped." -ForegroundColor Green
 Write-Host "--------------------------------------------------" -ForegroundColor Green
+
