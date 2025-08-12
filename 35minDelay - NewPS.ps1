@@ -25,7 +25,7 @@ $scriptsToRun = @(
 )
 
 # Define the pause duration in minutes
-$pauseMinutes = 2100
+$pauseSeconds = 2100
 
 Write-Host "--------------------------------------------------" -ForegroundColor Yellow
 Write-Host "                       ATTENTION!                     " -ForegroundColor Yellow
@@ -39,7 +39,7 @@ Write-Host ""
 Read-Host "Press Enter to proceed with the script execution..."
 
 Write-Host "Starting script execution sequence..." -ForegroundColor Green
-Write-Host "Each script will be followed by a $pauseMinutes minute pause." -ForegroundColor Green
+Write-Host "Each script will be followed by a $pauseSeconds minute pause." -ForegroundColor Green
 Write-Host ""
 
 # Loop through each script in the list
@@ -85,8 +85,8 @@ foreach ($scriptName in $scriptsToRun) {
     # Pause only if it's not the last script
     if ($scriptName -ne $scriptsToRun[-1]) {
         Write-Host ""
-        Write-Host "Pausing for $pauseMinutes minutes before the next script..." -ForegroundColor Blue
-        Start-Sleep -Seconds $pauseMinutes
+        Write-Host "Pausing for $pauseSeconds minutes before the next script..." -ForegroundColor Blue
+        Start-Sleep -Seconds $pauseSeconds
         Write-Host "Pause ended. Resuming execution." -ForegroundColor Blue
         Write-Host ""
     }
